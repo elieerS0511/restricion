@@ -16,13 +16,10 @@ class StockLocation(models.Model):
         return super()._search(domain, offset=offset, limit=limit, order=order)
 
     def check_access_rule(self, operation):
-        """
-        Bypassear reglas de registro para lectura si estamos en la jerarquía permitida.
-        Necesario para que Odoo pueda dibujar la ruta (Almacén -> Estante).
-        """
         user = self.env.user
         if not self.env.su and user.has_stock_restriction and operation == 'read':
             allowed_ids = user.get_all_location_ids_with_access()
+            # Si la ubicación solicitada es técnica o está en el árbol permitido, concedemos acceso
             if self.ids and all(loc_id in allowed_ids for loc_id in self.ids):
                 return None
         return super().check_access_rule(operation)
