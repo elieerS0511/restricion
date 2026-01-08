@@ -12,11 +12,12 @@
                                invisible="not restrict_stock_access"/>
                         <field name="allowed_location_ids" widget="many2many_tags" 
                                invisible="not restrict_stock_access"/>
-                        <!--<label for="has_stock_restriction" invisible="not restrict_stock_access"/>
-                        <field name="has_stock_restriction" invisible="not restrict_stock_access"/>-->
+                        <label for="has_stock_restriction" invisible="not restrict_stock_access"/>
+                        <field name="has_stock_restriction" invisible="not restrict_stock_access"/>
                     </group>
                 </page>
             </notebook>
         </field>
     </record>
+
 </odoo>
