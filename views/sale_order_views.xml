@@ -1,10 +1,41 @@
+<!--
+    Este archivo XML define modificaciones sutiles en la vista del formulario
+    de Pedidos de Venta (sale.order).
+-->
 <odoo>
+    <!--
+        Se define una nueva vista heredada para el modelo 'sale.order'.
+        inherit_id: Hacemos referencia a 'sale.view_order_form', la vista
+                    del formulario de pedido de venta estándar de Odoo.
+    -->
     <record id="view_order_form_inherit_wh_security" model="ir.ui.view">
         <field name="name">sale.order.form.wh.security</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!--
+                Usamos XPath para seleccionar el campo 'warehouse_id' (Almacén)
+                dentro de la vista original. La posición es 'attributes', lo que
+                significa que no vamos a añadir nada nuevo alrededor del campo,
+                sino que vamos a modificar sus atributos existentes.
+            -->
             <xpath expr="//field[@name='warehouse_id']" position="attributes">
+                <!--
+                    Añadimos el atributo 'options'. Este es un diccionario de Python
+                    en formato de texto que Odoo interpreta para cambiar el comportamiento
+                    de un campo.
+
+                    'no_create': True  -> El usuario no podrá crear un nuevo almacén
+                                         directamente desde este campo.
+                    'no_open': True   -> El usuario no podrá hacer clic en el almacén
+                                         para abrir su formulario.
+
+                    ¿Por qué hacemos esto? Para reforzar la seguridad. Al evitar que el
+                    usuario cree o abra almacenes desde aquí, nos aseguramos de que solo
+                    pueda seleccionar de la lista predefinida, que ya está filtrada
+                    por nuestras reglas de seguridad. Simplifica la interfaz y reduce
+                    la posibilidad de que el usuario intente saltarse las restricciones.
+                -->
                 <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
             </xpath>
             </field>

@@ -1,16 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Este archivo define las "Reglas de Registro" (Record Rules).
+    Las reglas de registro son el segundo nivel de seguridad, y se aplican DESPUÉS
+    de que se han verificado los permisos de acceso al modelo (el archivo anterior).
+
+    Una regla de registro aplica un filtro (un "dominio") a todas las operaciones
+    de lectura sobre un modelo.
+-->
 <odoo>
+    <!--
+        noupdate="1": Este es un atributo MUY importante. Significa que Odoo
+        cargará este registro la primera vez que se instale el módulo, pero
+        NO lo actualizará si el módulo se actualiza más tarde.
+
+        ¿Por qué? Porque las reglas de seguridad son datos que un administrador
+        del sistema podría querer modificar directamente en producción. Si no
+        pusiéramos `noupdate="1"`, cada vez que actualicemos el módulo,
+        sobrescribiríamos cualquier cambio que el administrador haya hecho.
+    -->
     <data noupdate="1">
+
+        <!--
+            Regla de Lectura Global para Ubicaciones.
+            Esta regla es un poco contraintuitiva en el contexto de nuestro módulo.
+            Parece que está dando acceso de lectura a TODO a todo el mundo,
+            lo cual es cierto, pero es la base sobre la que actúan nuestras
+            sobrescrituras del método `_search` en Python.
+
+            La lógica es la siguiente:
+            1. Esta regla base permite a Odoo iniciar las búsquedas de ubicaciones.
+            2. Nuestro método `_search` personalizado intercepta esa búsqueda.
+            3. Si el usuario está restringido, `_search` INYECTA un dominio adicional
+               para filtrar los resultados.
+
+            Sin esta regla base, los usuarios sin permisos explícitos de "Stock Manager"
+            podrían tener problemas para ver CUALQUIER ubicación.
+        -->
         <record id="rule_stock_location_read_all" model="ir.rule">
             <field name="name">Ubicaciones: Lectura Global</field>
             <field name="model_id" ref="stock.model_stock_location"/>
+
+            <!--
+                domain_force: Este es el corazón de la regla. Es un filtro que se
+                aplicará a TODAS las búsquedas.
+                "[(1, '=', 1)]" es un dominio que siempre es verdadero. Es una forma
+                de decir "no apliques ningún filtro en este nivel".
+            -->
             <field name="domain_force">[(1, '=', 1)]</field>
+
+            <!--
+                global="True": Marca la regla como "global". Las reglas globales
+                se suman a las reglas no globales. En caso de duda, es seguro
+                dejarlo como True para reglas de lectura amplias.
+            -->
             <field name="global" eval="True"/>
+
+            <!--
+                Aquí especificamos que esta regla solo afecta a la operación de LECTURA.
+                No estamos dando permisos de escritura, creación o borrado.
+            -->
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="False"/>
         </record>
-        
+
     </data>
 </odoo>
