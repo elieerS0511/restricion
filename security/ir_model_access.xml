@@ -1,8 +1,59 @@
-<record id="access_stock_quant_user_read_restricted" model="ir.model.access">
-    <field name="name">stock.quant.user.read</field>
-    <field name="model_id" ref="stock.model_stock_quant"/>
-    <field name="group_id" ref="base.group_user"/>
-    <field name="perm_read" eval="1"/>
-    <field name="perm_write" eval="1"/> <field name="perm_create" eval="1"/>
-    <field name="perm_unlink" eval="0"/>
-</record>
+<!--
+    Este archivo define los Derechos de Acceso a Modelos (ACL - Access Control List)
+    para nuestro módulo. Un registro 'ir.model.access' le dice a Odoo qué grupos
+    de usuarios pueden realizar operaciones básicas (Leer, Escribir, Crear, Borrar)
+    en un modelo determinado.
+
+    Estos permisos son el primer nivel de seguridad. Si un usuario no tiene
+    permiso de lectura ('perm_read') aquí, ninguna de las reglas de Python que
+    hemos escrito se evaluará, y el acceso será denegado directamente.
+-->
+<odoo>
+    <data> <!-- La etiqueta <data> es opcional en versiones recientes, pero es buena práctica -->
+
+        <!--
+            ID del Registro: Un identificador único.
+            Modelo: 'ir.model.access' es el modelo que almacena las ACL.
+        -->
+        <record id="access_stock_quant_user_read_restricted" model="ir.model.access">
+            <!--
+                name: Un nombre descriptivo para la regla de acceso.
+            -->
+            <field name="name">stock.quant.user.read</field>
+
+            <!--
+                model_id: Una referencia al modelo sobre el que estamos definiendo los permisos.
+                          Aquí, 'stock.model_stock_quant' se refiere al modelo 'stock.quant'.
+            -->
+            <field name="model_id" ref="stock.model_stock_quant"/>
+
+            <!--
+                group_id: El grupo de usuarios al que se aplica esta regla.
+                          'base.group_user' es el grupo base para todos los usuarios
+                          internos del sistema (es decir, no clientes del portal).
+                          Esto significa que la regla se aplica a CUALQUIER empleado.
+            -->
+            <field name="group_id" ref="base.group_user"/>
+
+            <!--
+                perm_read, perm_write, perm_create, perm_unlink: Son los interruptores
+                de permisos. Un '1' significa 'Permitido' y un '0' significa 'Denegado'.
+
+                Aquí estamos dando permisos de Lectura, Escritura y Creación a todos
+                los usuarios sobre el modelo 'stock.quant'.
+
+                ¿Por qué somos tan permisivos?
+                Porque la seguridad DETALLADA la gestionamos en Python (en stock_models.py).
+                Este archivo solo "abre la puerta" para que Odoo permita a nuestros métodos
+                de Python decidir, registro por registro, si el usuario puede o no
+                realizar la acción. Si pusiéramos 'perm_write' a 0 aquí, el método `write`
+                de nuestro modelo en Python nunca llegaría a ejecutarse.
+            -->
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="0"/> <!-- Borrar quants manualmente suele ser mala idea, lo mantenemos denegado. -->
+        </record>
+
+    </data>
+</odoo>
