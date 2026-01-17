@@ -1,3 +1,72 @@
+<!--
+    Este archivo XML define las modificaciones a la interfaz de usuario (UI)
+    para el modelo de Usuarios (res.users). Su objetivo es añadir los campos
+    de configuración de seguridad de inventario en el formulario de usuario.
+-->
+<odoo>
+    <!--
+        Se define un registro de 'ir.ui.view' para heredar y modificar una vista existente.
+        ID: Un identificador único para esta vista.
+        Model: El modelo al que se aplica esta vista ('res.users').
+        Inherit_id: El ID de la vista original que vamos a modificar. En este caso,
+                    es 'base.view_users_form', el formulario de usuario estándar de Odoo.
+    -->
+    <record id="view_users_form_stock_security" model="ir.ui.view">
+        <field name="name">res.users.form.stock.security</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <!--
+                Usamos XPath para localizar un punto de anclaje en la vista original.
+                Aquí, seleccionamos el elemento <notebook> y especificamos que queremos
+                añadir nuestro contenido "dentro" de él ('position="inside"').
+            -->
+            <notebook position="inside">
+                <!--
+                    Añadimos una nueva pestaña (página) al notebook del formulario de usuario.
+                    string: El texto que aparecerá en la pestaña.
+                    groups: La pestaña solo será visible para usuarios que pertenezcan al
+                            grupo 'stock.group_stock_manager' (Administradores de Inventario).
+                            Esto evita que usuarios normales vean estas opciones de configuración.
+                -->
+                <page string="Seguridad Inventario" groups="stock.group_stock_manager">
+                    <!--
+                        Dentro de la página, creamos un grupo para organizar los campos.
+                    -->
+                    <group>
+                        <!--
+                            Añadimos los campos que creamos en el modelo 'res.users.py'.
+                            Odoo automáticamente renderizará el widget adecuado para cada tipo de campo.
+                        -->
+
+                        <!-- El interruptor principal para activar/desactivar la restricción. -->
+                        <field name="restrict_stock_access"/>
+
+                        <!--
+                            El campo para seleccionar los almacenes permitidos.
+                            widget="many2many_tags": Muestra las selecciones como "etiquetas" de colores.
+                            invisible="not restrict_stock_access": Este campo solo será visible
+                                                                  en la interfaz si 'restrict_stock_access'
+                                                                  está marcado como verdadero. Es dinámico.
+                        -->
+                        <field name="allowed_warehouse_ids" widget="many2many_tags"
+                               invisible="not restrict_stock_access"/>
+
+                        <!--
+                            El campo para seleccionar las ubicaciones permitidas.
+                            Funciona de la misma manera que 'allowed_warehouse_ids'.
+                        -->
+                        <field name="allowed_location_ids" widget="many2many_tags"
+                               invisible="not restrict_stock_access"/>
+                        <!--<label for="has_stock_restriction" invisible="not restrict_stock_access"/>
+                        <field name="has_stock_restriction" invisible="not restrict_stock_access"/>-->
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
+=======
 <odoo>
     <record id="view_users_form_stock_security" model="ir.ui.view">
         <field name="name">res.users.form.stock.security</field>
@@ -12,11 +81,12 @@
                                invisible="not restrict_stock_access"/>
                         <field name="allowed_location_ids" widget="many2many_tags" 
                                invisible="not restrict_stock_access"/>
-                        <!--<label for="has_stock_restriction" invisible="not restrict_stock_access"/>
-                        <field name="has_stock_restriction" invisible="not restrict_stock_access"/>-->
+                        <label for="has_stock_restriction" invisible="not restrict_stock_access"/>
+                        <field name="has_stock_restriction" invisible="not restrict_stock_access"/>
                     </group>
                 </page>
             </notebook>
         </field>
     </record>
+
 </odoo>
