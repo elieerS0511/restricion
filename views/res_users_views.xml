@@ -66,3 +66,27 @@
         </field>
     </record>
 </odoo>
+=======
+<odoo>
+    <record id="view_users_form_stock_security" model="ir.ui.view">
+        <field name="name">res.users.form.stock.security</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Seguridad Inventario" groups="stock.group_stock_manager">
+                    <group>
+                        <field name="restrict_stock_access"/>
+                        <field name="allowed_warehouse_ids" widget="many2many_tags" 
+                               invisible="not restrict_stock_access"/>
+                        <field name="allowed_location_ids" widget="many2many_tags" 
+                               invisible="not restrict_stock_access"/>
+                        <label for="has_stock_restriction" invisible="not restrict_stock_access"/>
+                        <field name="has_stock_restriction" invisible="not restrict_stock_access"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+</odoo>
